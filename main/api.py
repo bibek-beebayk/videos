@@ -46,13 +46,13 @@ class MediaTypeViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.MediaTypeSerialiser
 
 
-class MediaBaseViewSet(viewsets.ModelViewSet):
-    queryset = models.MediaBase.objects.all()
-    serializer_class = serializers.MediaBaseSerializer
+# class MediaBaseViewSet(viewsets.ModelViewSet):
+#     queryset = models.MediaBase.objects.all()
+#     serializer_class = serializers.MediaBaseSerializer
 
 
 class VideoViewSet(viewsets.ModelViewSet):
-    queryset = models.Video.objects.all().select_related('media_type', 'company', 'user').prefetch_related('tags', 'commodities', 'situations', 'genre')
+    queryset = models.Video.objects.all().select_related('media_type', 'company', 'user').prefetch_related('tags', 'commodities', 'situations', 'genres')
     serializer_class = serializers.VideoSerializer
 
     

@@ -13,7 +13,7 @@ router.register('commodity', api.CommodityViewSet, basename='commodity')
 router.register('situation', api.SituationViewSet, basename='situation')
 router.register('award', api.AwardViewSet, basename='award')
 router.register('media-type', api.MediaTypeViewSet, basename='media-type')
-router.register('media-base', api.MediaBaseViewSet, basename='media-base')
+# router.register('media-base', api.MediaBaseViewSet, basename='media-base')
 router.register('video', api.VideoViewSet, basename='video')
 router.register('image', api.ImageViewSet, basename='image')
 

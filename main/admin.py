@@ -34,7 +34,7 @@ class AwardInline(admin.TabularInline):
 @admin.register(models.Video)
 class VideoAdmin(admin.ModelAdmin):
     inlines = [ContributorInline, AwardInline]
-    list_display = ['id', 'title', 'duration', 'views', 'downloads']
+    list_display = ['id', 'product_title', 'duration', 'views', 'downloads']
     list_filter = ['genres', 'media_type', 'tags', 'company', 'commodities', 'situations']
     list_per_page = 50
     # formfield_overrides = {
@@ -50,7 +50,7 @@ class VideoAdmin(admin.ModelAdmin):
 @admin.register(models.Image)
 class ImageAdmin(admin.ModelAdmin):
     inlines = [ContributorInline, AwardInline]
-    list_display = ['id', 'title']
+    list_display = ['id', 'product_title']
     list_filter = ['media_type', 'tags', 'company', 'commodities', 'situations']
     list_per_page = 50
     # formfield_overrides = {
