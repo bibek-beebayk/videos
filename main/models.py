@@ -119,14 +119,13 @@ class Award(models.Model):
         (MV_AWARD, 'MV Award'),
         (OTHER_AWARD, 'Other Award')
     ]
-
     title = models.CharField(_("Award Title"), max_length=256)
     award_type = models.CharField(_("Award Type"), max_length=2, choices=AWARD_TYPES)
     year = models.IntegerField(_("Year"), choices=get_year_choices(), default=get_current_year(), blank=True)
     media = models.ForeignKey('MediaBase', on_delete=models.SET_NULL, null=True, related_name='awards')
 
-    class Meta:
-        unique_together = [['title', 'year']]
+    # class Meta:
+    #     unique_together = [['title', 'year']]
 
 
     def __str__(self):
