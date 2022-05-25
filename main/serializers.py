@@ -1,4 +1,6 @@
 from rest_framework import serializers
+
+from libs.functions import create_objects
 from . import models
 from django.db import transaction
 
@@ -8,9 +10,9 @@ class GenreSerializer(serializers.ModelSerializer):
         depth = 1
         fields = ['id', 'name']
 
-        extra_kwargs = {
-            'id' : {'read_only': False}
-        }
+        # extra_kwargs = {
+        #     'id' : {'read_only': False}
+        # }
 
 
 class CompanySerializer(serializers.ModelSerializer):
@@ -24,10 +26,10 @@ class TagSerializer(serializers.ModelSerializer):
         model = models.Tag
         fields = ['id', 'name']
 
-        extra_kwargs = {
+        # extra_kwargs = {
 
-            'id' : {'read_only': False}
-        }
+        #     'id' : {'read_only': False}
+        # }
 
 
 
@@ -52,9 +54,9 @@ class CommoditySerializer(serializers.ModelSerializer):
         model = models.Commodity
         fields = ['id', 'name']
 
-        extra_kwargs = {
-            'id' : {'read_only': False}
-        }
+        # extra_kwargs = {
+        #     'id' : {'read_only': False}
+        # }
 
 
 class SituationSerializer(serializers.ModelSerializer):
@@ -62,9 +64,9 @@ class SituationSerializer(serializers.ModelSerializer):
         model = models.Situation
         fields = ['id', 'name']
 
-        extra_kwargs = {
-            'id' : {'read_only': False}
-        }
+        # extra_kwargs = {
+        #     'id' : {'read_only': False}
+        # }
 
 class AwardSerializer(serializers.ModelSerializer):
     class Meta:
@@ -91,8 +93,8 @@ class VideoSerializer(serializers.ModelSerializer):
 
     awards = AwardSerializer(many=True)
     contributors = ContributorSerializer(many=True)
-    # genres = GenreSerializer(many=True)
-    # commodities = CommoditySerializer(many=True)
+    genres = GenreSerializer(many=True)
+    commodities = CommoditySerializer(many=True)
     # situations = SituationSerializer(many=True)
     # tags = TagSerializer(many=True)
 
@@ -103,13 +105,19 @@ class VideoSerializer(serializers.ModelSerializer):
    
     def create(self, validated_data):
         with transaction.atomic():
-            # remove related fields from validated data
+            # remove related fields from validated 
+            validated_data.pop('genres')
+            validated_data.pop('tags')
+            validated_data.pop('commodities')
+            validated_data.pop('situations')
+
             awards_data = validated_data.pop('awards')
             contributors_data = validated_data.pop('contributors')
-            genres_data = validated_data.pop('genres')
-            commodities_data = validated_data.pop('commodities')
-            situations_data = validated_data.pop('situations')
-            tags_data = validated_data.pop('tags')
+
+            genres_data = self.context['request'].data.get('genres')
+            commodities_data = self.context['request'].data.get('commodities')
+            situations_data = self.context['request'].data.get('situations')
+            tags_data = self.context['request'].data.get('tags')
 
             video = models.Video.objects.create(user=self.context['request'].user, **validated_data)
 
@@ -119,17 +127,16 @@ class VideoSerializer(serializers.ModelSerializer):
             for contributor in contributors_data:
                 models.Contributor.objects.create(media=video, **contributor)
 
-            for genre in genres_data:
-                video.genres.add(genre)
-                        
-            for commodity in commodities_data:
-                video.commodities.add(commodity)       
-
-            for situation in situations_data:
-                video.situations.add(situation)
-
-            for tag in tags_data:
-                video.tags.add(tag)
+            # create data for many to many related fields
+            genres = create_objects(genres_data, models.Genre)
+            commodities = create_objects(commodities_data, models.Commodity)
+            situations = create_objects(situations_data, models.Situation
+            )
+            tags = create_objects(tags_data, models.Tag)
+            video.genres.set(genres)
+            video.commodities.set(commodities)
+            video.situations.set(situations)
+            video.tags.set(tags)
 
         return video
 

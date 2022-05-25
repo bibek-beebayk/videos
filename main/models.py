@@ -22,7 +22,7 @@ MEDIA_TYPE_CHOICES = [
 '''Start of Genre Model'''
 class Genre(models.Model):
 
-    name = models.CharField(max_length=256, unique=True, db_index=True)
+    name = models.CharField(max_length=256)
 
     class Meta:
         verbose_name = _('Genre')
@@ -49,7 +49,7 @@ class Company(models.Model):
 
 '''Start of Tag Model'''
 class Tag(models.Model):
-    name = models.CharField(max_length=256, unique=True, db_index=True)
+    name = models.CharField(max_length=256, unique=True)
 
     def __str__(self) -> str:
         return self.name
@@ -87,7 +87,7 @@ class Contributor(models.Model):
 
 '''Start of Commodity Model'''
 class Commodity(models.Model):
-    name = models.CharField(max_length=256, unique=True, db_index=True)
+    name = models.CharField(max_length=256)
     # related_media = models.ManyToManyField( 'MediaBase', verbose_name=_("Media"))
 
     class Meta:
@@ -100,7 +100,7 @@ class Commodity(models.Model):
 
 '''Start of Situation Model'''
 class Situation(models.Model):
-    name = models.CharField(max_length=256, unique=True, db_index=True)
+    name = models.CharField(max_length=256)
 
     def __str__(self) -> str:
         return self.name
