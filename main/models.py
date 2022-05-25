@@ -1,4 +1,6 @@
+from contextlib import nullcontext
 import datetime
+from tokenize import blank_re
 from django.utils import timezone
 from django.db import models
 from django.contrib.auth import get_user_model
@@ -49,7 +51,7 @@ class Company(models.Model):
 
 '''Start of Tag Model'''
 class Tag(models.Model):
-    name = models.CharField(max_length=256, unique=True)
+    name = models.CharField(max_length=256)
 
     def __str__(self) -> str:
         return self.name
@@ -76,7 +78,7 @@ class Contributor(models.Model):
     name = models.CharField(max_length=256)
     company = models.ForeignKey(Company, on_delete=models.SET_NULL, related_name='contributors', null=True)
     remarks = models.CharField(max_length=1024, blank=True, null=True)
-    media = models.ForeignKey('MediaBase', on_delete=models.SET_NULL, null=True, related_name='contributors')
+    media = models.ForeignKey('MediaBase', on_delete=models.CASCADE, related_name='contributors')
 
 
     def __str__(self):
@@ -122,7 +124,7 @@ class Award(models.Model):
     title = models.CharField(_("Award Title"), max_length=256)
     award_type = models.CharField(_("Award Type"), max_length=2, choices=AWARD_TYPES)
     year = models.IntegerField(_("Year"), choices=get_year_choices(), default=get_current_year(), blank=True)
-    media = models.ForeignKey('MediaBase', on_delete=models.SET_NULL, null=True, related_name='awards')
+    media = models.ForeignKey('MediaBase', on_delete=models.CASCADE, related_name='awards')
 
     # class Meta:
     #     unique_together = [['title', 'year']]
@@ -230,7 +232,7 @@ class Video(MediaBase):
 
 '''Start of Image Model'''
 class Image(MediaBase):
-    image_file = models.ImageField(upload_to='content/images/')
+    image_file = models.ImageField(upload_to='content/images/', null=True, blank=True)
 
 '''End of Image Model'''
 
