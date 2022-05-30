@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-2@*gp*4z*!_p7jf1$+n9x=rj^tg9lxg!e=4b)r9g@4@7tjh^!h
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['192.168.88.25', 'localhost']
 
 
 # Application definition
@@ -136,3 +136,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 INTERNAL_IPS = [
     "127.0.0.1",
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS' : 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE' : 2,
+
+    'DEFAULT_PERMISSION_CLASSES' : [
+        'rest_framework.permissions.AllowAny',
+        ]
+}

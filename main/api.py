@@ -43,7 +43,7 @@ class AwardViewSet(viewsets.ModelViewSet):
 
 class MediaTypeViewSet(viewsets.ModelViewSet):
     queryset = models.MediaType.objects.all()
-    serializer_class = serializers.MediaTypeSerialiser
+    serializer_class = serializers.MediaTypeSerializer
 
 
 # class MediaBaseViewSet(viewsets.ModelViewSet):
@@ -54,6 +54,7 @@ class MediaTypeViewSet(viewsets.ModelViewSet):
 class VideoViewSet(viewsets.ModelViewSet):
     queryset = models.Video.objects.all().select_related('media_type', 'company', 'user').prefetch_related('tags', 'commodities', 'situations', 'genres')
     serializer_class = serializers.VideoSerializer
+    # http_method_names = [ 'post']
 
     
 class ImageViewSet(viewsets.ModelViewSet):

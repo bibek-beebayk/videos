@@ -31,9 +31,22 @@ class AwardInline(admin.TabularInline):
     model = models.Award
     extra = 1
 
+class VideoThumbnailInline(admin.TabularInline):
+    model = models.VideoThumbnail
+    extra = 1
+
+# @admin.register(models.VideoThumbnail)
+# class VideoThumbnailAdmin(admin.ModelAdmin):
+#     list_display = ['id', 'image']
+
+@admin.register(models.Agency)
+class AgencyAdmin(admin.ModelAdmin):
+    list_display = ['id', 'name']
+
+
 @admin.register(models.Video)
 class VideoAdmin(admin.ModelAdmin):
-    inlines = [ContributorInline, AwardInline]
+    inlines = [ContributorInline, AwardInline, VideoThumbnailInline]
     list_display = ['id', 'product_title', 'duration', 'views', 'downloads']
     list_filter = ['genres', 'media_type', 'tags', 'company', 'commodities', 'situations']
     list_per_page = 50

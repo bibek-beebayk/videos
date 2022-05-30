@@ -33,12 +33,15 @@ class Genre(models.Model):
     def __str__(self):
         return self.name
 
+    def get_absolute_url(self):
+        return reverse("genre_detail", kwargs={"pk": self.pk})
+
 '''End of Genre Model'''
 
 
 '''Start of Company Model'''
 class Company(models.Model):
-    name = models.CharField(max_length=256, unique=True, db_index=True)
+    name = models.CharField(max_length=256)
     address = models.CharField(max_length=256)
 
     class Meta:
@@ -46,6 +49,9 @@ class Company(models.Model):
 
     def __str__(self):
         return self.name
+
+    def get_absolute_url(self):
+        return reverse("company_detail", kwargs={"pk": self.pk})
 '''End of Company Model'''
 
 
@@ -57,7 +63,7 @@ class Tag(models.Model):
         return self.name
 
     def get_absolute_url(self):
-        return reverse('')
+        return reverse("tag_details", kwargs={"pk": self.pk})
 
 '''End of Tag Model'''
 
@@ -97,6 +103,9 @@ class Commodity(models.Model):
     def __str__(self):
         return self.name
 
+    def get_absoulte_url(self):
+        return reverse("commodity_details", kwargs={"pk": self.pk})
+
 '''End of Commodity Model'''
 
 
@@ -106,6 +115,9 @@ class Situation(models.Model):
 
     def __str__(self) -> str:
         return self.name
+    
+    def get_absolute_url(self):
+        return reverse("situation_detail", kwargs={"pk": self.pk})
 '''End of Situation Model'''
 
 '''Start of Award Model'''
@@ -133,12 +145,15 @@ class Award(models.Model):
     def __str__(self):
         return self.title
 
+    def get_absolute_url(self):
+        return reverse("award_details", kwargs={"pk": self.pk})
+
 '''End of Award Model'''
 
 
 '''Start of Mediatype Model'''
 class MediaType(models.Model):
-    name = models.CharField(max_length=256, unique=True, db_index=True)
+    name = models.CharField(max_length=256)
 
 
     def __str__(self) -> str:
@@ -149,7 +164,10 @@ class MediaType(models.Model):
 
 '''Start of Agency Model'''
 class Agency(models.Model):
-    name = models.CharField(max_length=256, unique=True, )
+    name = models.CharField(max_length=256, blank=True, null=True)
+
+    def __str__(self) -> str:
+        return self.name
 '''End of Agency Model'''
 
 
@@ -157,9 +175,11 @@ class Agency(models.Model):
 class MediaBase(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, verbose_name=_("User"))
 
-    company = models.ForeignKey(Company, on_delete=models.PROTECT, null=True, blank=True,related_name='media', verbose_name=_("Company"))
+    company = models.ForeignKey(Company, on_delete=models.SET_NULL, blank=True,related_name='media',null=True, verbose_name=_("Company"))
 
-    media_type = models.ForeignKey(MediaType, on_delete=models.PROTECT, related_name='media', verbose_name=_("Media Type"))
+    agency = models.ForeignKey(Agency, on_delete=models.SET_NULL, null=True, blank=True, related_name='videos')
+
+    media_type = models.ForeignKey(MediaType, on_delete=models.SET_NULL, null=True, blank=True, related_name='media', verbose_name=_("Media Type"))
 
     product_name = models.CharField(max_length=256, null=True, blank=True, verbose_name=_("Product Name"))
 
@@ -177,7 +197,6 @@ class MediaBase(models.Model):
 
     # description = models.TextField(_("Description"), null=True, blank=True)
 
-    agency = models.CharField(max_length=256, verbose_name=_("Agency"), null=True, blank=True)
 
     production_company = models.CharField(max_length=256, blank=True, null=True, verbose_name=_("Production Company"))
 
@@ -199,9 +218,17 @@ class MediaBase(models.Model):
 
 '''End of MediaBase Model'''
 
+'''Start of VideoThumbnail model'''
+class VideoThumbnail(models.Model):
+    image = models.ImageField(upload_to='video/thumbnails/', blank=True, null=True)
+    video = models.ForeignKey('Video', on_delete=models.CASCADE, related_name= _('thumbnails'))
+
+'''End of VideoThumbnail Model'''
 
 '''Start of Video Model'''
 class Video(MediaBase):
+
+    # TODO Required Constraint
     video_file = models.FileField(_("Full Video"), upload_to='videos', validators=[FileExtensionValidator(allowed_extensions=['mp4', 'mov'])], null=True, blank=True)
     
     video_file_60 = models.FileField(_("60 Seconds Preview"), upload_to='videos/', null=True, blank=True, validators=[FileExtensionValidator(allowed_extensions=['mp4', 'mov'])])
@@ -218,14 +245,19 @@ class Video(MediaBase):
 
     # vtt_url = models.URLField(_("VTT URL"), max_length=1024, null=True, blank=True)
 
-    thumbnail1 = models.ImageField(upload_to='video/thumbnails/', blank=True, null=True)
-    thumbnail2 = models.ImageField(upload_to='video/thumbnails/', blank=True, null=True)
-    thumbnail3 = models.ImageField(upload_to='video/thumbnails/', blank=True, null=True)
-    thumbnail4 = models.ImageField(upload_to='video/thumbnails/', blank=True, null=True)
+    # thumbnail1 = models.ImageField(upload_to='video/thumbnails/', blank=True, null=True)
+    # thumbnail2 = models.ImageField(upload_to='video/thumbnails/', blank=True, null=True)
+    # thumbnail3 = models.ImageField(upload_to='video/thumbnails/', blank=True, null=True)
+    # thumbnail4 = models.ImageField(upload_to='video/thumbnails/', blank=True, null=True)
+
+    # thumbnails = models
 
     # def save(self, *args, **kwargs):
     #     if not self.user:
     #         self.user = self.context['request'].user
+
+    def get_absolute_url(self):
+        return reverse("video_details", kwargs={"pk": self.pk})
 
 '''End of Video Model'''
 
@@ -234,5 +266,7 @@ class Video(MediaBase):
 class Image(MediaBase):
     image_file = models.ImageField(upload_to='content/images/', null=True, blank=True)
 
+    def get_absolute_url(self):
+        return reverse("image_details", kwargs={"pk": self.pk})
 '''End of Image Model'''
 
