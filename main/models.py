@@ -173,6 +173,14 @@ class Agency(models.Model):
 
 '''Start of MediaBase Model'''
 class MediaBase(models.Model):
+    IMAGE = 'I'
+    VIDEO = 'V'
+
+    MEDIA_TYPES  = [
+        (VIDEO, 'Video'),
+        (IMAGE, 'Image')
+    ]
+
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, verbose_name=_("User"))
 
     company = models.ForeignKey(Company, on_delete=models.SET_NULL, blank=True,related_name='media',null=True, verbose_name=_("Company"))
@@ -180,6 +188,9 @@ class MediaBase(models.Model):
     agency = models.ForeignKey(Agency, on_delete=models.SET_NULL, null=True, blank=True, related_name='videos')
 
     media_type = models.ForeignKey(MediaType, on_delete=models.SET_NULL, null=True, blank=True, related_name='media', verbose_name=_("Media Type"))
+
+    # The type of media (video or image)
+    type = models.CharField(max_length=1, choices=MEDIA_TYPES)
 
     product_name = models.CharField(max_length=256, null=True, blank=True, verbose_name=_("Product Name"))
 
@@ -255,10 +266,6 @@ class Video(MediaBase):
     # def save(self, *args, **kwargs):
     #     if not self.user:
     #         self.user = self.context['request'].user
-
-    def get_absolute_url(self):
-        return reverse("video_details", kwargs={"pk": self.pk})
-
 '''End of Video Model'''
 
 
@@ -266,7 +273,5 @@ class Video(MediaBase):
 class Image(MediaBase):
     image_file = models.ImageField(upload_to='content/images/', null=True, blank=True)
 
-    def get_absolute_url(self):
-        return reverse("image_details", kwargs={"pk": self.pk})
 '''End of Image Model'''
 

@@ -1,5 +1,5 @@
 from django import views
-from rest_framework import viewsets
+from rest_framework import viewsets, generics, mixins, response, permissions
 from . import serializers
 from . import models
 
@@ -50,13 +50,35 @@ class MediaTypeViewSet(viewsets.ModelViewSet):
 #     queryset = models.MediaBase.objects.all()
 #     serializer_class = serializers.MediaBaseSerializer
 
+class VideoListView(generics.GenericAPIView, mixins.ListModelMixin):
+    serializer_class = serializers.VideoListSerializer
+    queryset = models.Video.objects.all()
+
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+
+class VideoDetailView(generics.GenericAPIView, mixins.RetrieveModelMixin):
+    serializer_class = serializers.VideoSerializer
+    queryset = models.Video.objects.all()
+
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
 
 class VideoViewSet(viewsets.ModelViewSet):
-    queryset = models.Video.objects.all().select_related('media_type', 'company', 'user').prefetch_related('tags', 'commodities', 'situations', 'genres')
     serializer_class = serializers.VideoSerializer
-    # http_method_names = [ 'post']
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        qs = models.Video.objects.filter(user=self.request.user).select_related('media_type', 'company', 'user').prefetch_related('tags', 'commodities', 'situations', 'genres')
+        return qs
+       
 
     
 class ImageViewSet(viewsets.ModelViewSet):
-    queryset = models.Image.objects.all()
+    # queryset = models.Image.objects.all()
     serializer_class = serializers.ImageSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        qs = models.Image.objects.filter(user=self.request.user).select_related('media_type', 'company', 'user').prefetch_related('tags', 'commodities', 'situations', 'genres')
+        return qs

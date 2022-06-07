@@ -74,7 +74,11 @@ class AgencySerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Agency
         fields = ['id', 'name']
-
+        
+class VideoListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Video
+        fields = ['id','product_title', 'user', 'duration', 'video_file_15']
 
 class VideoSerializer(serializers.ModelSerializer):
 
@@ -92,17 +96,13 @@ class VideoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Video
-        fields = ['id','user', 'company', 'media_type', 'product_name', 'product_title', 'on_air_date', 'commodities', 'genres', 'situations', 'tags', 'agency', 'production_company', 'views', 'downloads', 'video_file', 'video_file_60', 'video_file_30', 'video_file_15', 'duration', 'youtube_url', 'thumbnails', 'awards', 'contributors', 'created_at', 'updated_at']
+        fields = ['id','user', 'company', 'media_type', 'type', 'product_name', 'product_title', 'on_air_date', 'commodities', 'genres', 'situations', 'tags', 'agency', 'production_company', 'views', 'downloads', 'video_file', 'video_file_60', 'video_file_30', 'video_file_15', 'duration', 'youtube_url', 'thumbnails', 'awards', 'contributors', 'created_at', 'updated_at']
 
    
     def create(self, validated_data):
         with transaction.atomic():
-            # remove related fields from validated 
-            # validated_data.pop('genres')
-            # validated_data.pop('tags')
-            # validated_data.pop('commodities')
-            # validated_data.pop('situations')
 
+            # list of fields to remove from validated data, related fields
             pop_list = ['genres', 'commodities', 'situations', 'tags', 'company', 'media_type','agency']
             for item in pop_list:
                 validated_data.pop(item)
@@ -121,7 +121,6 @@ class VideoSerializer(serializers.ModelSerializer):
             agency = self.context['request'].data.get('agency')
 
             # create video instance
-            # TODO user=self.context['request'].user, to assign currently logged in user
             video = models.Video.objects.create(user=self.context['request'].user, **validated_data)
             
 
